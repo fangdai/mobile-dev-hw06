@@ -69,7 +69,7 @@ public class MainActivity extends AppCompatActivity {
         public void run() {
             try{
                 progressBar.incrementProgressBy(inputVal);
-                progress += inputVal+1;
+                progress += inputVal;
                 txtPercent.setText(progress+"%");
                 if (progress >= progressBar.getMax()) {
                     progressBar.setProgress(MAX_PROGRESS);
