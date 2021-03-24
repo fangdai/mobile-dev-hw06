@@ -11,13 +11,13 @@
         android:layout_height="40dp"
         android:orientation="horizontal">
         <TextView android:id="@+id/txtPercent"
-            android:layout_width="0dp" android:layout_weight="0.1"
+            android:layout_width="0dp" android:layout_weight="0.2"
             android:layout_height="match_parent" android:text="1%"
             android:textSize="24sp"/>
         <ProgressBar
             android:id="@+id/progressBar"
             style="?android:attr/progressBarStyleHorizontal"
-            android:layout_width="0dp" android:layout_weight="0.9"
+            android:layout_width="0dp" android:layout_weight="0.8"
             android:layout_height="match_parent" />
     </LinearLayout>
 <Button android:id="@+id/btnDoItAgain" android:layout_width="170dp"

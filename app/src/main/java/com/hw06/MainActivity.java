@@ -54,7 +54,8 @@ public class MainActivity extends AppCompatActivity {
 
         txtBox.setHint("Input a number");
         txtBox.setText("");
-
+        progress=0;
+        txtPercent.setText(progress+"%");
         progressBar.setMax(MAX_PROGRESS);
         progressBar.setProgress(0);
 
@@ -68,11 +69,12 @@ public class MainActivity extends AppCompatActivity {
         public void run() {
             try{
                 progressBar.incrementProgressBy(inputVal);
-                progress += inputVal;
-                txtPercent.setText(progress+"");
+                progress += inputVal+1;
+                txtPercent.setText(progress+"%");
                 if (progress >= progressBar.getMax()) {
                     progressBar.setProgress(MAX_PROGRESS);
                     btnDoItAgain.setEnabled(true);
+                    txtPercent.setText(MAX_PROGRESS+"%");
                 }
             }
             catch (Exception e){Log.e("<<foregroundTask>>",e.getMessage());}
