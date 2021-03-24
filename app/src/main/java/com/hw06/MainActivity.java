@@ -25,7 +25,6 @@ public class MainActivity extends AppCompatActivity {
     EditText txtBox;
     TextView txtPercent;
     int progress = 0, step = 0, inputVal = 0, globalVar = 0;
-    long startingMills = System.currentTimeMillis();
     final int MAX_PROGRESS = 100;
     Handler myHandler = new Handler();
     Random ran = new Random();
@@ -43,13 +42,22 @@ public class MainActivity extends AppCompatActivity {
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        btnDoItAgain.setEnabled(false);
-                        inputVal = Integer.parseInt(txtBox.getText().toString());
-                        isRunning = true;
-                        //Toast.makeText(MainActivity.this, ""+isRunning.getText().toString(),1).show();
-                        if(isRunning == true){
-                            onStart();}
-
+                        if (progress < progressBar.getMax()) {
+                            btnDoItAgain.setEnabled(false);
+                            String temp = txtBox.getText().toString();
+                            if (temp.isEmpty()) {
+                                temp = "0";
+                            }
+                            inputVal = Integer.parseInt(temp);
+                            if (inputVal > 100) {
+                                inputVal = 100;
+                            }
+                            isRunning = true;
+                        } else {
+                            progress = 0;
+                            progressBar.setProgress(0);
+                            txtBox.setText("");
+                        }
                     }
 
                 }
@@ -59,46 +67,37 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        viewsToFadeIn.add(findViewById(R.id.btnDoItAgain));
-        for (View vz : viewsToFadeIn)
-        {
-            vz.setAlpha(0); // make invisible to start
-        }
         txtBox.setHint("Input a number");
         txtBox.setText("");
-        progress=0;
         txtPercent.setText(progress+"%");
         progressBar.setMax(MAX_PROGRESS);
         progressBar.setProgress(0);
 
-//        Thread incProgress =
-        Thread backgroundThread = new Thread(bgTask, "bgTask");
-        backgroundThread.start();
+        Thread incThread = new Thread(incProgress, "incProgress"),
+                bgThread = new Thread(bgTask, "bgTask");
+        bgThread.start();
     }
 
     private Runnable incProgress = new Runnable() {
         @Override
         public void run() {
             try{
-                progressBar.incrementProgressBy(inputVal);
-                //progress += (inputVal <= 0) ? 1 : ran.nextInt(inputVal - 1); // Tang dan
-                progress += 1; // basic
+                if (isRunning) {
+                    step = (inputVal <= 0) ? 1 : ran.nextInt(inputVal - 1);
+                    progressBar.incrementProgressBy(step);
+                    progress += step; // Tang dan
+                }
 
-                txtPercent.setText(progress+"%");
-                for (View v : viewsToFadeIn)
-                {
+                txtPercent.setText(progress + "%");
+                for (View v : viewsToFadeIn) {
                     // 3 second fade in time
-                    v.animate().alpha(progress%100).start();
+                    v.animate().alpha(progress % 100).start();
                 }
                 if (progress >= progressBar.getMax()) {
                     progressBar.setProgress(MAX_PROGRESS);
                     btnDoItAgain.setEnabled(true);
-                    txtPercent.setText(MAX_PROGRESS+"%");
-                    for (View v : viewsToFadeIn)
-                    {
-                        // 3 second fade in time
-                        v.setAlpha(1);
-                    }
+                    txtPercent.setText(MAX_PROGRESS + "%");
+                    isRunning = false;
                 }
             }
             catch (Exception e){Log.e("<<foregroundTask>>",e.getMessage());}
