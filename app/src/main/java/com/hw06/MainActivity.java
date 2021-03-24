@@ -22,7 +22,6 @@ public class MainActivity extends AppCompatActivity {
     TextView txtPercent;
     int progress = 0, step = 0, inputVal = 0, globalVar = 0;
     long startingMills = System.currentTimeMillis();
-    boolean isRunning = false, resetFlag = false;
     final int MAX_PROGRESS = 100;
     Handler myHandler = new Handler();
 
@@ -41,7 +40,7 @@ public class MainActivity extends AppCompatActivity {
                     public void onClick(View v) {
                         btnDoItAgain.setEnabled(false);
                         inputVal = Integer.parseInt(txtBox.getText().toString());
-                        isRunning = true;
+                        //isRunning = true;
                         onStart();
                     }
 
@@ -54,11 +53,13 @@ public class MainActivity extends AppCompatActivity {
         super.onStart();
 
         txtBox.setHint("Input a number");
+        txtBox.setText("");
+
         progressBar.setMax(MAX_PROGRESS);
-        progressBar.setProgress(progress);
+        progressBar.setProgress(0);
 
 //        Thread incProgress =
-        Thread backgroundThread = new Thread(incProgress, "incProgress");
+        Thread backgroundThread = new Thread(bgTask, "bgTask");
         backgroundThread.start();
     }
 
@@ -66,20 +67,12 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void run() {
             try{
-                while(isRunning) {
-                    progressBar.incrementProgressBy(inputVal);
-                    progress += inputVal;
-                    if (progress >= MAX_PROGRESS) {
-                        progressBar.setProgress(MAX_PROGRESS);
-                        btnDoItAgain.setEnabled(true);
-                        break;
-                    }
-                    try {
-                        Thread.sleep(100);
-                    }
-                    catch(InterruptedException e){
-                        e.printStackTrace();
-                    }
+                progressBar.incrementProgressBy(inputVal);
+                progress += inputVal;
+                txtPercent.setText(progress+"");
+                if (progress >= progressBar.getMax()) {
+                    progressBar.setProgress(MAX_PROGRESS);
+                    btnDoItAgain.setEnabled(true);
                 }
             }
             catch (Exception e){Log.e("<<foregroundTask>>",e.getMessage());}
@@ -90,7 +83,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void run() {
             try {
-                for (int i = 0; i < 20; i++) {
+                for (int i = 0; i < MAX_PROGRESS; i++) {
                     Thread.sleep(1000);
                     globalVar++;
                     myHandler.post(incProgress);
