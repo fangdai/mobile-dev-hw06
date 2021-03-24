@@ -58,26 +58,31 @@ public class MainActivity extends AppCompatActivity {
         progressBar.setProgress(progress);
 
 //        Thread incProgress =
-        new Thread(incProgress, "incProgress").start();
+        Thread backgroundThread = new Thread(incProgress, "incProgress");
+        backgroundThread.start();
     }
 
     private Runnable incProgress = new Runnable() {
         @Override
         public void run() {
-            while (isRunning) {
-                progress += inputVal;
-                progressBar.incrementProgressBy(inputVal);
-                if (progress >= MAX_PROGRESS) {
-                    progressBar.setProgress(MAX_PROGRESS);
-                    btnDoItAgain.setEnabled(true);
-                    break;
-                }
-                try {
-                    Thread.sleep(100);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
+            try{
+                while(isRunning) {
+                    progressBar.incrementProgressBy(inputVal);
+                    progress += inputVal;
+                    if (progress >= MAX_PROGRESS) {
+                        progressBar.setProgress(MAX_PROGRESS);
+                        btnDoItAgain.setEnabled(true);
+                        break;
+                    }
+                    try {
+                        Thread.sleep(100);
+                    }
+                    catch(InterruptedException e){
+                        e.printStackTrace();
+                    }
                 }
             }
+            catch (Exception e){Log.e("<<foregroundTask>>",e.getMessage());}
         }
     };
 
